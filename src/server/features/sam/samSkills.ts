@@ -2,19 +2,21 @@ import { parse as parseYaml } from "yaml";
 import { z } from "zod";
 import type { SkillSource } from "agents/skills";
 
-// Bundle the repo's public-facing skills (.agents/skills) into SAM at build
-// time. Skills marked `metadata.internal: true` are repo-dev tooling and stay
-// out. The glob names the dot-directory literally, so Vite matches it.
+// Bundle the product skills shipped in the OpenSEO plugin into SAM at build
+// time. This is the same nine-workflow catalog installed by plugin clients.
 //
 // The source implements the `SkillSource` interface by hand (type-only import
 // above): the `agents/skills` runtime module drags in the skill-*script*
 // executor graph (@cloudflare/codemode, just-bash), which a static in-memory
 // manifest doesn't need.
-const skillFiles = import.meta.glob<string>("/.agents/skills/*/SKILL.md", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-});
+const skillFiles = import.meta.glob<string>(
+  "/plugins/openseo/skills/*/SKILL.md",
+  {
+    query: "?raw",
+    import: "default",
+    eager: true,
+  },
+);
 
 // The skill bodies are written for external MCP clients (Claude Code); this
 // note reframes the surface so SAM skips the steps that don't apply in-app.
@@ -37,10 +39,9 @@ type SamSkill = { name: string; description: string; body: string };
 const frontmatterSchema = z.looseObject({
   name: z.string().min(1),
   description: z.string().min(1),
-  metadata: z.looseObject({ internal: z.boolean().optional() }).optional(),
 });
 
-function parseSkill(path: string, raw: string): SamSkill | null {
+function parseSkill(path: string, raw: string): SamSkill {
   const match = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(raw);
   if (!match) throw new Error(`Skill has no frontmatter: ${path}`);
   const parsed = frontmatterSchema.safeParse(parseYaml(match[1]));
@@ -48,10 +49,6 @@ function parseSkill(path: string, raw: string): SamSkill | null {
     throw new Error(`Skill frontmatter needs name + description: ${path}`);
   }
   const frontmatter = parsed.data;
-  if (frontmatter.metadata?.internal === true) return null;
-  // Public for `npx skills add` users but not an in-app workflow: it drafts
-  // GitHub issues for contributors, which SAM has no surface for.
-  if (frontmatter.name === "simple-issue-description") return null;
   return {
     name: frontmatter.name,
     description: frontmatter.description,
@@ -77,7 +74,6 @@ export function buildSamSkillSource(): SkillSource {
   if (cachedSource) return cachedSource;
   const skills = Object.entries(skillFiles)
     .map(([path, raw]) => parseSkill(path, raw))
-    .filter((skill): skill is SamSkill => skill !== null)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (cachedSource = {

@@ -1,25 +1,41 @@
-# Agent guidance
+# OpenSEO
 
-## Engineering principles
+OpenSEO is an open-source SEO application with hosted and self-hosted deployments. The repository also ships an installable OpenSEO plugin with customer-facing MCP access and SEO workflow skills.
 
-- Prefer simple, readable, flat code with minimal indirection.
-- Search for existing implementations and installed libraries before creating new helpers or abstractions.
-- Abstract when it prevents meaningful drift and makes the result simpler to maintain. Avoid speculative or one-use abstraction layers.
-- Keep product data normalized and relationships explicit. Do not encode relational data in JSON or text merely to avoid joins.
-- For new application-backed backend functionality, default to: TanStack server function → service → repository.
-- Keep schema changes, queries, and mutations compatible with both SQLite and Postgres.
-- Use idiomatic TypeScript. Use Zod to validate untrusted data and narrow runtime values at trust boundaries.
-- Prefer established project helpers and libraries over hand-rolled implementations.
-- Prefer idiomatic TanStack Query, Router, and Form patterns for server state, routing, and submitted forms.
+## Repository map
 
-## Log papercuts
+- `src/routes` and `src/router.tsx`: TanStack Start routes
+- `src/client`: browser UI and client-side integrations
+- `src/serverFunctions`: application entry points for server mutations and queries
+- `src/server`: services, repositories, auth, billing, MCP, email, and workflows
+- `src/db/d1` and `src/db/pg`: SQLite and Postgres implementations
+- `drizzle`: D1 migrations and schema snapshots
+- `plugins/openseo`: distributable Codex, Claude, and Cursor plugin
+- `specs`: feature and data contracts
+- `docs`: development, deployment, self-hosting, privacy, and operator references
 
-When small, non-blocking repository friction occurs—a retried tool call, confusing setup step, flaky command, stale cache, misleading error, or non-obvious gotcha—use the `papercuts` skill and append it to `.agents/PAPERCUTS.md` in the moment. Continue the current task. Real bugs and tracked work are not papercuts, and sensitive data must never be logged.
+## Architecture constraints
 
-Do not mine an entire session for papercuts or start a broad cleanup unless the user explicitly asks.
+- For new application-backed backend behavior, use a TanStack server function, then a service, then a repository.
+- Keep schema changes, queries, and mutations compatible with both D1 SQLite and Postgres.
+- Validate untrusted values with Zod at trust boundaries.
+- Use established TanStack Query, Router, and Form patterns and existing project helpers.
+- Keep secrets in environment-specific configuration. Never commit credentials or copy production data into fixtures.
 
-## Preserve review learnings
+## Product plugin
 
-After a merge-ready or other code review verifies a finding, use `maintain-greptile-rules` only when the finding exposes a recurring or high-risk repository invariant that existing `.greptile/` context and automated checks do not capture. Do not promote one-off bugs or preferences into permanent review rules.
+`plugins/openseo/skills` is the canonical source for the nine SEO workflow skills shipped to customers. These files are product functionality, separate from repository guidance. Keep them as real files beside the plugin manifests and MCP configuration. `pnpm check:plugin-skills` validates the package in place.
 
-Changes to `.greptile/**`, `AGENTS.md`, `CLAUDE.md`, `.agents/skills/**`, and `.github/**` alter the review control plane and must receive explicit maintainer review. CODEOWNERS requests that review; where repository settings allow, enable GitHub's requirement for code-owner approval. Repository-specific rules live in `.greptile/`; maintainers should configure or retain a minimal org-enforced Greptile baseline for external-contribution, secret, authentication, billing, CI, and rule-tampering risks. Agents should report an unverified or missing baseline and must not mutate dashboard or organization rules without explicit user authorization.
+## Commands
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm db:migrate:local
+pnpm dev
+pnpm build
+pnpm test
+pnpm lint
+```
+
+Run the checks relevant to the change; do not add tests that mirror low-impact reversible edits, and broaden or repeat checks only when new behavior or evidence warrants it.
