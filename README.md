@@ -70,12 +70,6 @@ Creating clear issues is the best way to contribute.
 
 Read more here: [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md)
 
-We have this skill: `/simple-issue-description` which helps.
-
-```sh
-npx skills add every-app/open-seo --skill simple-issue-description
-```
-
 ## Community
 
 Join Discord to chat: [Discord](https://discord.gg/c9uGs3cFXr)
