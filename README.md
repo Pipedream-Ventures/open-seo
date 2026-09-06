@@ -1,86 +1,55 @@
 # OpenSEO
 
-> Open source alternative to Semrush and Ahrefs
+OpenSEO is an open-source alternative to Semrush and Ahrefs for keyword research, rank tracking, competitor analysis, backlinks, site audits, and AI visibility. It supports the hosted service at [openseo.so](https://openseo.so) and self-hosted deployments using a customer-owned DataForSEO account.
 
-OpenSEO is an SEO tool for _the people_. If tools like Semrush or Ahrefs are too expensive or bloated, OpenSEO is a pay-as-you-go alternative that you actually control.
+## Repository map
 
-> All-in-one SEO tool for you and your AI agent.
+| Path                  | Purpose                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| `src/routes`          | TanStack Start routes and API endpoints                          |
+| `src/client`          | UI, feature modules, navigation, and browser integrations        |
+| `src/serverFunctions` | Typed server entry points                                        |
+| `src/server`          | Services, repositories, auth, billing, MCP, email, and workflows |
+| `src/db/d1`           | Cloudflare D1 implementation                                     |
+| `src/db/pg`           | Postgres implementation                                          |
+| `drizzle`             | D1 migrations and schema snapshots                               |
+| `plugins/openseo`     | Distributable Codex, Claude, and Cursor plugin                   |
+| `specs`               | Feature and architecture contracts                               |
+| `docs`                | Local development, deployment, self-hosting, and operator guides |
 
-Connect with any agent like Claude Code, OpenClaw or Hermes. We have pre-built skills, but you can build your own to tailor OpenSEO to your needs.
+## Local development
 
-<img width="1385" height="794" alt="Image" src="https://github.com/user-attachments/assets/fd208249-44ea-4849-bb4b-5fc896aeab73" />
+Requires Node.js 20+, Corepack, and the pnpm version declared in `package.json`.
 
-## Hosted Version
-
-Try OpenSEO for free on our website. If you want to support the project, a hosted subscription is $10/month.
-
-[openseo.so](https://openseo.so)
-
-## Why use OpenSEO?
-
-- Best in class MCP and AI Skills.
-- Modern, simple UI.
-  - Focused workflows instead of a bloated, complex SEO suite.
-- No subscriptions.
-  - Bring your own DataForSEO API key and pay only for what you use.
-- Fork and vibe code your own custom tool.
-
-## Main SEO Workflows
-
-- Keyword research
-- Rank tracking
-- Competitor Insights
-- Backlinks
-- Site Audits
-- AI Visibility
-
-## OpenSEO MCP & Agent Skills
-
-OpenSEO exposes an MCP server so AI agents like Claude Code, OpenClaw, and Hermes can use your SEO data directly. Agent Skills are reusable workflows that guide your agent through SEO tasks using the MCP.
-
-- [Set up OpenSEO MCP](https://openseo.so/docs/mcp)
-- [Set up OpenSEO Agent Skills](https://openseo.so/docs/skills/setup)
-
-## Self-Hosting
-
-OpenSEO supports two self-hosting paths:
-
-- **Simple: Docker (Best for testing it out)** - For personal use on your own machine. See [`docs/SELF_HOSTING_DOCKER.md`](./docs/SELF_HOSTING_DOCKER.md).
-  - Unless you already are self-hosting other apps and are confident doing so, we recommend self-hosting with Cloudflare as opposed to Railway, Coolify or Dokploy.
-  - We plan to make it simpler to host on those platforms in the next few months.
-- **Recommended: Cloudflare** - For internet-facing self-hosting across multiple devices or with your team (works on the free plan). See [`docs/SELF_HOSTING_CLOUDFLARE.md`](./docs/SELF_HOSTING_CLOUDFLARE.md).
-
-Either way, you need a DataForSEO API key to get SEO data. See [`docs/DATAFORSEO_API_KEY.md`](./docs/DATAFORSEO_API_KEY.md).
-
-## Costs
-
-OpenSEO needs a [DataForSEO](https://dataforseo.com/?aff=255379) API key so that you can get SEO data. You pay them directly when self hosting.
-
-See [openseo.so/pricing](https://openseo.so/pricing)
-
-When you self host, your costs will be slightly lower than the estimates on our website. The way the hosted service makes money is by charging 28% extra for every request we make to DataForSEO.
-
-## Local Development
-
-See [`docs/LOCAL_DEVELOPMENT.md`](./docs/LOCAL_DEVELOPMENT.md).
-
-## Contributing
-
-Creating clear issues is the best way to contribute.
-
-Read more here: [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md)
-
-We have this skill: `/simple-issue-description` which helps.
-
-```sh
-npx skills add every-app/open-seo --skill simple-issue-description
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm db:migrate:local
+pnpm dev
+pnpm build
+pnpm test
+pnpm lint
+pnpm check:plugin-skills
 ```
 
-## Community
+Copy `.env.example` to `.env.local` and follow [Local Development](docs/LOCAL_DEVELOPMENT.md) for DataForSEO and auth-mode setup.
 
-Join Discord to chat: [Discord](https://discord.gg/c9uGs3cFXr)
+## Architecture
 
-Follow along for updates:
+OpenSEO runs on TanStack Start and Cloudflare Workers. Application-backed operations flow from a TanStack server function to a service and repository. D1 is the default database; Postgres is supported for larger installations. Both backends share compatible schemas and behavior. Zod validates untrusted values at trust boundaries.
 
-- Follow on X: https://x.com/bensenescu
-- Sign up for the mailing list on our website: [openseo.so](https://openseo.so)
+Auth modes support Cloudflare Access, local trusted development, and hosted Better Auth. DataForSEO credentials and deployment secrets belong in the documented environment files or deployment secret store.
+
+## MCP and product skills
+
+`plugins/openseo` contains the plugin manifests, hosted MCP configuration, and nine SEO workflow skills distributed to customers. The files under `plugins/openseo/skills` are product functionality and remain the canonical skill source for packaging. See [plugin documentation](plugins/openseo/README.md), [MCP setup](https://openseo.so/docs/mcp), and [skill setup](https://openseo.so/docs/skills/setup).
+
+## Deployment and contribution
+
+- [Docker self-hosting](docs/SELF_HOSTING_DOCKER.md)
+- [Cloudflare self-hosting](docs/SELF_HOSTING_CLOUDFLARE.md)
+- [Portfolio deployment](docs/PORTFOLIO_DEPLOYMENT.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [DataForSEO setup](docs/DATAFORSEO_API_KEY.md)
+
+OpenSEO is licensed under the [MIT License](LICENSE). Pricing and hosted-service details live at [openseo.so/pricing](https://openseo.so/pricing).

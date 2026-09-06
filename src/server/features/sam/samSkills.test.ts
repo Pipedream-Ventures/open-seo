@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import { buildSamSkillSource } from "@/server/features/sam/samSkills";
 
 describe("buildSamSkillSource", () => {
-  // Guards the real failure modes: a skill whose frontmatter breaks (build
-  // throws), an internal repo-dev skill leaking into SAM, or the public set
-  // silently shrinking because a glob or marking change dropped it.
+  // Guards the real failure modes: broken frontmatter or the canonical plugin
+  // catalog silently changing because the build glob no longer matches it.
   it("serves exactly the public product skills", async () => {
     const source = buildSamSkillSource();
     const names = (await source.list()).map((skill) => skill.name);
@@ -23,5 +22,6 @@ describe("buildSamSkillSource", () => {
 
     const loaded = await source.load("seo-project-setup");
     expect(loaded?.body).toContain("Surface note: you are SAM");
+    expect(loaded?.body).toContain("# OpenSEO SEO Project Setup");
   });
 });

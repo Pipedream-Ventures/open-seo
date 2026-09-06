@@ -39,7 +39,8 @@
     "knip": "knip",
     "release:notes": "node scripts/release-notes.mjs",
     "release:publish": "node scripts/publish-release.mjs",
-    "sync-plugin-skills": "node scripts/sync-plugin-skills.mjs",
+    "check:plugin-skills": "node scripts/sync-plugin-skills.mjs",
+    "sync-plugin-skills": "pnpm check:plugin-skills",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --reporter=dot",
@@ -54,7 +55,7 @@
     "gdpr:erase-user": "tsx scripts/erase-user-data.ts",
     "seed:rank-tracking": "tsx scripts/seed-rank-tracking.ts",
     "seed:projects": "tsx scripts/seed-projects.ts",
-    "ci:check": "prettier --check . && knip && tsc --noEmit && tsc --noEmit -p badseo/tsconfig.json && oxlint . --type-aware && pnpm sync-plugin-skills && test -z \"$(git status --porcelain -- plugins/openseo/skills)\""
+    "ci:check": "prettier --check . && knip && tsc --noEmit && tsc --noEmit -p badseo/tsconfig.json && oxlint . --type-aware && pnpm check:plugin-skills"
   },
   "cloudflare": {
     "bindings": {
