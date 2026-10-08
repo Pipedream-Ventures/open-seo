@@ -28,8 +28,8 @@
       "paths": [
         "."
       ],
-      "tags": "v*",
-      "tag_example": "v<semver>"
+      "tags": "web/prod-*",
+      "tag_example": "web/prod-<YYYY-MM-DD>.<n>"
     }
   }
 }
