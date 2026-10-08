@@ -1,0 +1,35 @@
+{
+  "trunk": "origin/main",
+  "issue_pattern": "PIPE-\\d+",
+  "tracker": "linear",
+  "issue_url": "https://linear.app/pipedream-ventures/issue/{key}",
+  "exclude": [
+    "docs/**",
+    "**/docs/**",
+    "**/*.md",
+    ".github/**",
+    "release-notes/**",
+    "runbooks/**",
+    "specs/**",
+    "e2e/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__tests__/**",
+    "**/*.test.*",
+    "**/*.spec.*"
+  ],
+  "write": {
+    "file": "docs/releases/CURRENT.md",
+    "section": "Unreleased on trunk"
+  },
+  "platforms": {
+    "web": {
+      "label": "Web",
+      "paths": [
+        "."
+      ],
+      "tags": "v*",
+      "tag_example": "v<semver>"
+    }
+  }
+}
