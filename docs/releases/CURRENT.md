@@ -1,6 +1,6 @@
 # OpenSEO release ledger
 
-Commits on `main` since the latest `v*` tag. Finalized notes live in [release-notes/](../../release-notes/README.md).
+Commits on `main` since the latest portfolio deploy (`web/prod-*` tag, added by `pnpm deploy:portfolio`). `v*` tags are upstream releases. Finalized notes live in [release-notes/](../../release-notes/README.md).
 
 ## Unreleased on trunk
 

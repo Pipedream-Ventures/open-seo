@@ -49,3 +49,13 @@ try {
 } finally {
   rmSync(DEPLOY_ENV_FILE, { force: true });
 }
+
+// Tag the deployed commit web/prod-<YYYY-MM-DD>.<n> so release notes start at
+// the last deploy. tag-deploy (Pipedream agent harness) tags only a clean tree
+// whose commit is on origin/main.
+const tag = spawnSync("tag-deploy", ["web"], { stdio: "inherit" });
+if (tag.error || tag.status !== 0) {
+  console.warn(
+    "Deployed, but tag-deploy did not tag web/prod-*. Tag the deployed commit by hand.",
+  );
+}

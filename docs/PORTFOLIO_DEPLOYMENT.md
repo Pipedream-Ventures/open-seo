@@ -20,7 +20,7 @@ Log in to Cloudflare and Infisical on the machine, then run:
 pnpm deploy:portfolio
 ```
 
-The command exports only `/open-seo` from Infisical into the ignored `.env.selfhost` file, deploys the `selfhost` stage, and removes the local secret file when the command exits.
+The command exports only `/open-seo` from Infisical into the ignored `.env.selfhost` file, deploys the `selfhost` stage, and removes the local secret file when the command exits. After a successful deploy it runs the harness `tag-deploy web`, which tags the commit `web/prod-<YYYY-MM-DD>.<n>` when the tree is clean and on `origin/main`.
 
 Before a production query, validate the DataForSEO credential with the free `GET /v3/appendix/user_data` endpoint. Do not assume a successful Cloudflare deployment proves the provider credential works.
 
